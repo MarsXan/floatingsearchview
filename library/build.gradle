@@ -8,7 +8,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 22
         versionCode 13
-        versionName "2.1.1"
+        versionName "2.1.2"
         //consumerProguardFiles 'consumer-proguard-rules.txt'
     }
 }
