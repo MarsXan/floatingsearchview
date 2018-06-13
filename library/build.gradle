@@ -7,10 +7,17 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 15
-        versionName "2.1.4"
+        versionCode 16
+        versionName "2.1.6"
         //consumerProguardFiles 'consumer-proguard-rules.txt'
     }
+}
+ext {
+  isLibrary = true
+  pomPackaging = "aar"
+  pomArtifactId = "library"
+  pomName = "Library"
+  pomDescription = 'An android library project which contains the library'
 }
 
 dependencies {
