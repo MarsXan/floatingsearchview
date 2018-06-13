@@ -1,17 +1,5 @@
 apply plugin: 'com.android.library'
 
-android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
-
-    defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 22
-        versionCode 16
-        versionName "2.1.6"
-        //consumerProguardFiles 'consumer-proguard-rules.txt'
-    }
-}
 ext {
   isLibrary = true
   pomPackaging = "aar"
@@ -21,12 +9,11 @@ ext {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'com.android.support:recyclerview-v7:27.1.1'
-    compile 'com.android.support:design:27.1.1'
-    compile 'com.android.support:cardview-v7:27.1.1'
-    compile 'com.bartoszlipinski:viewpropertyobjectanimator:1.2.0'
+  compile fileTree(dir: 'libs', include: ['*.jar'])
+  compile 'com.android.support:appcompat-v7:27.1.1'
+  compile 'com.android.support:recyclerview-v7:27.1.1'
+  compile 'com.android.support:design:27.1.1'
+  compile 'com.android.support:cardview-v7:27.1.1'
+  compile 'com.bartoszlipinski:viewpropertyobjectanimator:1.2.0'
 }
 
-//enable when uploading lib// apply from: 'maven-push.gradle'

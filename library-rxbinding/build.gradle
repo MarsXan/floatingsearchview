@@ -1,17 +1,5 @@
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
 
-android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
-
-    defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 22
-        versionCode 14
-        versionName "2.0.7"
-    }
-}
 ext {
   isLibrary = true
   pomPackaging = "aar"
@@ -21,10 +9,7 @@ ext {
 }
 
 dependencies {
-    compile 'com.android.support:support-annotations:27.1.1'
-    compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
-    compile project(path: ':library')
+  compile 'com.android.support:support-annotations:27.1.1'
+  compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
+  compile project(path: ':library')
 }
-
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"

@@ -11,32 +11,16 @@ buildscript {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
-
-    defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 22
-        versionCode 14
-        versionName "2.0.7"
-    }
-    sourceSets{
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-}
 ext {
   isLibrary = true
   pomPackaging = "aar"
-  pomArtifactId = "kotlin_rxbinding"
-  pomName = "Kotlin Rx Binding"
+  pomArtifactId = "rxbinding"
+  pomName = "Rx Binding"
   pomDescription = 'An android library project which contains the rxbinding'
 }
 
 dependencies {
-    compile project(path: ':library-rxbinding')
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+  compile project(path: ':library-rxbinding')
+  compile "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
-sourceCompatibility = "1.7"
-targetCompatibility = "1.7"
