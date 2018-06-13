@@ -215,10 +215,11 @@ public class SlidingSearchResultsExampleFragment extends BaseExampleFragment {
          */
         mSearchView.setOnBindSuggestionCallback(new SearchSuggestionsAdapter.OnBindSuggestionCallback() {
             @Override
-            public void onBindSuggestion(View suggestionView, ImageView leftIcon,
+            public void onBindSuggestion(View suggestionView, ImageView leftIcon,ImageView rightIcon,
                                          TextView textView, SearchSuggestion item, int itemPosition) {
                 ColorSuggestion colorSuggestion = (ColorSuggestion) item;
-
+              leftIcon.setVisibility(View.GONE);
+              rightIcon.setVisibility(View.GONE);
                 String textColor = mIsDarkSearchTheme ? "#ffffff" : "#000000";
                 String textLight = mIsDarkSearchTheme ? "#bfbfbf" : "#787878";
 

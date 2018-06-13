@@ -53,7 +53,7 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
 
     public interface OnBindSuggestionCallback {
 
-        void onBindSuggestion(View suggestionView, ImageView leftIcon, TextView textView,
+        void onBindSuggestion(View suggestionView, ImageView leftIcon,ImageView rightIcon, TextView textView,
                               SearchSuggestion item, int itemPosition);
     }
 
@@ -193,7 +193,8 @@ public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.
         }
 
         if (mOnBindSuggestionCallback != null) {
-            mOnBindSuggestionCallback.onBindSuggestion(viewHolder.itemView, viewHolder.leftIcon, viewHolder.body,
+            mOnBindSuggestionCallback.onBindSuggestion(viewHolder.itemView, viewHolder.leftIcon,
+                viewHolder.rightIcon, viewHolder.body,
                     suggestionItem, position);
         }
     }
