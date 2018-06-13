@@ -25,6 +25,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.arlib.floatingsearchview.R;
@@ -37,211 +38,211 @@ import java.util.List;
 
 public class SearchSuggestionsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static final String TAG = "SearchSuggestionsAdapter";
+  private static final String TAG = "SearchSuggestionsAdapter";
 
-    private List<? extends SearchSuggestion> mSearchSuggestions = new ArrayList<>();
+  private List<? extends SearchSuggestion> mSearchSuggestions = new ArrayList<>();
 
+  private Listener mListener;
+
+  private Context mContext;
+
+  private Drawable mRightIconDrawable;
+  private boolean mShowRightMoveUpBtn = false;
+  private int mBodyTextSizePx;
+  private int mTextColor = -1;
+  private int mRightIconColor = -1;
+
+  public interface OnBindSuggestionCallback {
+
+    void onBindSuggestion(View suggestionView, ImageView leftIcon, ImageView rightIcon,
+        TextView textView,
+        SearchSuggestion item, int itemPosition);
+  }
+
+  private OnBindSuggestionCallback mOnBindSuggestionCallback;
+
+  public interface Listener {
+
+    void onItemSelected(SearchSuggestion item);
+
+    void onMoveItemToSearchClicked(SearchSuggestion item);
+  }
+
+  public static class SearchSuggestionViewHolder extends RecyclerView.ViewHolder {
+
+    public TextView body;
+    public ImageView leftIcon;
+    public ImageView rightIcon;
+    public LinearLayout mainContainer;
     private Listener mListener;
-
-    private Context mContext;
-
-    private Drawable mRightIconDrawable;
-    private boolean mShowRightMoveUpBtn = false;
-    private int mBodyTextSizePx;
-    private int mTextColor = -1;
-    private int mRightIconColor = -1;
-
-    public interface OnBindSuggestionCallback {
-
-        void onBindSuggestion(View suggestionView, ImageView leftIcon,ImageView rightIcon, TextView textView,
-                              SearchSuggestion item, int itemPosition);
-    }
-
-    private OnBindSuggestionCallback mOnBindSuggestionCallback;
 
     public interface Listener {
 
-        void onItemSelected(SearchSuggestion item);
+      void onItemClicked(int adapterPosition);
 
-        void onMoveItemToSearchClicked(SearchSuggestion item);
+      void onMoveItemToSearchClicked(int adapterPosition);
     }
 
-    public static class SearchSuggestionViewHolder extends RecyclerView.ViewHolder {
+    public SearchSuggestionViewHolder(View v, Listener listener) {
+      super(v);
 
-        public TextView body;
-        public ImageView leftIcon;
-        public ImageView rightIcon;
+      mListener = listener;
+      body = (TextView) v.findViewById(R.id.body);
+      leftIcon = (ImageView) v.findViewById(R.id.left_icon);
+      rightIcon = (ImageView) v.findViewById(R.id.right_icon);
+      mainContainer = (LinearLayout) v.findViewById(R.id.mainContainer);
+      rightIcon.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
 
-        private Listener mListener;
-
-        public interface Listener {
-
-            void onItemClicked(int adapterPosition);
-
-            void onMoveItemToSearchClicked(int adapterPosition);
+          int adapterPosition = getAdapterPosition();
+          if (mListener != null && adapterPosition != RecyclerView.NO_POSITION) {
+            mListener.onMoveItemToSearchClicked(getAdapterPosition());
+          }
         }
+      });
 
-        public SearchSuggestionViewHolder(View v, Listener listener) {
-            super(v);
+      itemView.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
 
-            mListener = listener;
-            body = (TextView) v.findViewById(R.id.body);
-            leftIcon = (ImageView) v.findViewById(R.id.left_icon);
-            rightIcon = (ImageView) v.findViewById(R.id.right_icon);
-
-            rightIcon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    int adapterPosition = getAdapterPosition();
-                    if (mListener != null && adapterPosition != RecyclerView.NO_POSITION) {
-                        mListener.onMoveItemToSearchClicked(getAdapterPosition());
-                    }
-                }
-            });
-
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    int adapterPosition = getAdapterPosition();
-                    if (mListener != null && adapterPosition != RecyclerView.NO_POSITION) {
-                        mListener.onItemClicked(adapterPosition);
-                    }
-                }
-            });
+          int adapterPosition = getAdapterPosition();
+          if (mListener != null && adapterPosition != RecyclerView.NO_POSITION) {
+            mListener.onItemClicked(adapterPosition);
+          }
         }
+      });
+    }
+  }
+
+  public SearchSuggestionsAdapter(Context context, int suggestionTextSize, Listener listener) {
+    this.mContext = context;
+    this.mListener = listener;
+    this.mBodyTextSizePx = suggestionTextSize;
+
+    mRightIconDrawable = Util.getWrappedDrawable(mContext, R.drawable.ic_arrow_back_black_24dp);
+    DrawableCompat.setTint(mRightIconDrawable, Util.getColor(mContext, R.color.gray_active_icon));
+  }
+
+  public void swapData(List<? extends SearchSuggestion> searchSuggestions) {
+    mSearchSuggestions = searchSuggestions;
+    notifyDataSetChanged();
+  }
+
+  public List<? extends SearchSuggestion> getDataSet() {
+    return mSearchSuggestions;
+  }
+
+  public void setOnBindSuggestionCallback(OnBindSuggestionCallback callback) {
+    this.mOnBindSuggestionCallback = callback;
+  }
+
+  @Override
+  public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
+
+    View view = LayoutInflater.from(viewGroup.getContext())
+        .inflate(R.layout.search_suggestion_item, viewGroup, false);
+    SearchSuggestionViewHolder viewHolder = new SearchSuggestionViewHolder(view,
+        new SearchSuggestionViewHolder.Listener() {
+
+          @Override
+          public void onItemClicked(int adapterPosition) {
+
+            if (mListener != null) {
+              mListener.onItemSelected(mSearchSuggestions.get(adapterPosition));
+            }
+          }
+
+          @Override
+          public void onMoveItemToSearchClicked(int adapterPosition) {
+
+            if (mListener != null) {
+              mListener.onMoveItemToSearchClicked(mSearchSuggestions
+                  .get(adapterPosition));
+            }
+          }
+        });
+
+    viewHolder.rightIcon.setImageDrawable(mRightIconDrawable);
+    viewHolder.body.setTextSize(TypedValue.COMPLEX_UNIT_PX, mBodyTextSizePx);
+
+    return viewHolder;
+  }
+
+  @Override
+  public void onBindViewHolder(RecyclerView.ViewHolder vh, int position) {
+
+    SearchSuggestionViewHolder viewHolder = (SearchSuggestionViewHolder) vh;
+
+    if (!mShowRightMoveUpBtn) {
+      viewHolder.rightIcon.setEnabled(false);
+      viewHolder.rightIcon.setVisibility(View.INVISIBLE);
+    } else {
+      viewHolder.rightIcon.setEnabled(true);
+      viewHolder.rightIcon.setVisibility(View.VISIBLE);
     }
 
-    public SearchSuggestionsAdapter(Context context, int suggestionTextSize, Listener listener) {
-        this.mContext = context;
-        this.mListener = listener;
-        this.mBodyTextSizePx = suggestionTextSize;
+    SearchSuggestion suggestionItem = mSearchSuggestions.get(position);
+    viewHolder.body.setText(suggestionItem.getBody());
 
-        mRightIconDrawable = Util.getWrappedDrawable(mContext, R.drawable.ic_arrow_back_black_24dp);
-        DrawableCompat.setTint(mRightIconDrawable, Util.getColor(mContext, R.color.gray_active_icon));
+    if (mTextColor != -1) {
+      viewHolder.body.setTextColor(mTextColor);
     }
 
-    public void swapData(List<? extends SearchSuggestion> searchSuggestions) {
-        mSearchSuggestions = searchSuggestions;
-        notifyDataSetChanged();
+    if (mRightIconColor != -1) {
+      Util.setIconColor(viewHolder.rightIcon, mRightIconColor);
     }
 
-    public List<? extends SearchSuggestion> getDataSet() {
-        return mSearchSuggestions;
+    if (mOnBindSuggestionCallback != null) {
+      mOnBindSuggestionCallback.onBindSuggestion(viewHolder.itemView, viewHolder.leftIcon,
+          viewHolder.rightIcon, viewHolder.body,
+          suggestionItem, position);
     }
+  }
 
-    public void setOnBindSuggestionCallback(OnBindSuggestionCallback callback) {
-        this.mOnBindSuggestionCallback = callback;
+  @Override
+  public int getItemCount() {
+    return mSearchSuggestions != null ? mSearchSuggestions.size() : 0;
+  }
+
+  public void setTextColor(int color) {
+
+    boolean notify = false;
+    if (this.mTextColor != color) {
+      notify = true;
     }
-
-    @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-
-        View view = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.search_suggestion_item, viewGroup, false);
-        SearchSuggestionViewHolder viewHolder = new SearchSuggestionViewHolder(view,
-                new SearchSuggestionViewHolder.Listener() {
-
-                    @Override
-                    public void onItemClicked(int adapterPosition) {
-
-                        if (mListener != null) {
-                            mListener.onItemSelected(mSearchSuggestions.get(adapterPosition));
-                        }
-                    }
-
-                    @Override
-                    public void onMoveItemToSearchClicked(int adapterPosition) {
-
-                        if (mListener != null) {
-                            mListener.onMoveItemToSearchClicked(mSearchSuggestions
-                                    .get(adapterPosition));
-                        }
-                    }
-
-                });
-
-        viewHolder.rightIcon.setImageDrawable(mRightIconDrawable);
-        viewHolder.body.setTextSize(TypedValue.COMPLEX_UNIT_PX, mBodyTextSizePx);
-
-        return viewHolder;
+    this.mTextColor = color;
+    if (notify) {
+      notifyDataSetChanged();
     }
+  }
 
-    @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder vh, int position) {
+  public void setRightIconColor(int color) {
 
-        SearchSuggestionViewHolder viewHolder = (SearchSuggestionViewHolder) vh;
-
-        if (!mShowRightMoveUpBtn) {
-            viewHolder.rightIcon.setEnabled(false);
-            viewHolder.rightIcon.setVisibility(View.INVISIBLE);
-        } else {
-            viewHolder.rightIcon.setEnabled(true);
-            viewHolder.rightIcon.setVisibility(View.VISIBLE);
-        }
-
-        SearchSuggestion suggestionItem = mSearchSuggestions.get(position);
-        viewHolder.body.setText(suggestionItem.getBody());
-
-        if(mTextColor != -1){
-            viewHolder.body.setTextColor(mTextColor);
-        }
-
-        if(mRightIconColor != -1){
-            Util.setIconColor(viewHolder.rightIcon, mRightIconColor);
-        }
-
-        if (mOnBindSuggestionCallback != null) {
-            mOnBindSuggestionCallback.onBindSuggestion(viewHolder.itemView, viewHolder.leftIcon,
-                viewHolder.rightIcon, viewHolder.body,
-                    suggestionItem, position);
-        }
+    boolean notify = false;
+    if (this.mRightIconColor != color) {
+      notify = true;
     }
-
-    @Override
-    public int getItemCount() {
-        return mSearchSuggestions != null ? mSearchSuggestions.size() : 0;
+    this.mRightIconColor = color;
+    if (notify) {
+      notifyDataSetChanged();
     }
+  }
 
-    public void setTextColor(int color) {
+  public void setShowMoveUpIcon(boolean show) {
 
-        boolean notify = false;
-        if (this.mTextColor != color) {
-            notify = true;
-        }
-        this.mTextColor = color;
-        if (notify) {
-            notifyDataSetChanged();
-        }
+    boolean notify = false;
+    if (this.mShowRightMoveUpBtn != show) {
+      notify = true;
     }
-
-    public void setRightIconColor(int color) {
-
-        boolean notify = false;
-        if (this.mRightIconColor != color) {
-            notify = true;
-        }
-        this.mRightIconColor = color;
-        if (notify) {
-            notifyDataSetChanged();
-        }
+    this.mShowRightMoveUpBtn = show;
+    if (notify) {
+      notifyDataSetChanged();
     }
+  }
 
-    public void setShowMoveUpIcon(boolean show) {
-
-        boolean notify = false;
-        if (this.mShowRightMoveUpBtn != show) {
-            notify = true;
-        }
-        this.mShowRightMoveUpBtn = show;
-        if (notify) {
-            notifyDataSetChanged();
-        }
-    }
-
-    public void reverseList() {
-        Collections.reverse(mSearchSuggestions);
-        notifyDataSetChanged();
-    }
+  public void reverseList() {
+    Collections.reverse(mSearchSuggestions);
+    notifyDataSetChanged();
+  }
 }

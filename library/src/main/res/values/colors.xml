@@ -5,6 +5,7 @@
     <color name="transparent">#00000000</color>
     <color name="semi_transparent">#33000000</color>
     <color name="suggestion_item_regular_color">#FAFAFA</color>
+    <color name="suggestion_item_second_color">#eee</color>
     <color name="suggestion_item_pressed_color">#bbbbbb</color>
     <color name="suggestion_list_color">#FFFFFF</color>
     <color name="search_input_background_color">#FFFFFF</color>
