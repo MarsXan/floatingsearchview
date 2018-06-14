@@ -1469,7 +1469,7 @@ public class FloatingSearchView extends FrameLayout {
         return mIsFocused;
     }
 
-    private void setSearchFocusedInternal(final boolean focused) {
+    public void setSearchFocusedInternal(final boolean focused) {
         this.mIsFocused = focused;
 
         if (focused) {
